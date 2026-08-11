@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react";
 import ProjectCard from "../elements/ProjectCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Layers } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // 🔹 Sub-Component: ProjectSlider
 // Menangani logika Next/Prev untuk setiap kategori
@@ -286,7 +286,7 @@ const Projects = ({ goto }) => {
       <section
         id="projects"
         ref={goto}
-        className="relative w-full pt-24 px-4 overflow-hidden min-h-screen"
+        className="relative w-full pt-16 sm:pt-24 px-4 overflow-hidden min-h-screen"
       >
         {/* --- Background Glow Effects --- */}
         <div className="absolute top-50 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -301,7 +301,7 @@ const Projects = ({ goto }) => {
             viewport={{ once: true, amount: 0.2 }}
             className="text-center mb-20"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
               Featured{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                 Projects

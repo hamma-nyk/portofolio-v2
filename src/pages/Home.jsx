@@ -1,19 +1,28 @@
-import { Fragment, useState, useEffect, useRef } from "react";
+import {
+  Fragment,
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  lazy,
+  Suspense,
+} from "react";
 import ButtonNav from "@/components/elements/ButtonNav";
 import CodeTemplate from "@/components/elements/CodeTemplate";
 import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faLinkedin } from "@fortawesome/free-brands-svg-icons";
-import ButtonHome from "@/components/elements/ButtonHome";
-import Experiences from "@/components/fragments/Experiences";
-import About from "@/components/fragments/About";
-import Projects from "@/components/fragments/Projects";
-import Message from "@/components/fragments/Message";
 import { motion, AnimatePresence } from "framer-motion";
 import { Particles } from "@/components/ui/shadcn-io/particles";
 import { House, User, Briefcase, FolderKanban, Mail } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ChatBot from "@/components/elements/ChatBot";
+
+const Experiences = lazy(() => import("@/components/fragments/Experiences"));
+const About = lazy(() => import("@/components/fragments/About"));
+const Projects = lazy(() => import("@/components/fragments/Projects"));
+const Message = lazy(() => import("@/components/fragments/Message"));
+const ChatBot = lazy(() => import("@/components/elements/ChatBot"));
+
 const Home = () => {
   const [isScroll, setIsScroll] = useState(false);
   const HomeSection = useRef(null);
@@ -26,77 +35,115 @@ const Home = () => {
   const [index, setIndex] = useState(0);
   const [maxWidth, setMaxWidth] = useState(0);
   const measureRef = useRef(null);
-  // 1. Tambahkan State untuk menyimpan section mana yang sedang aktif
   const [activeNav, setActiveNav] = useState("home");
 
-  // --- Varians untuk Animasi Staggered Text ---
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08, // Kecepatan muncul per kata sedikit diperlambat untuk kesan dramatis
-        delayChildren: 0.2, // Jeda sebelum kata pertama muncul setelah load
+  const containerVariants = useMemo(
+    () => ({
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.08, delayChildren: 0.2 },
       },
-    },
-  };
+    }),
+    [],
+  );
 
-  const wordVariants = {
-    hidden: { filter: "blur(12px)", opacity: 0, y: 10 },
-    visible: {
-      filter: "blur(0px)",
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
+  const wordVariants = useMemo(
+    () => ({
+      hidden: { filter: "blur(12px)", opacity: 0, y: 10 },
+      visible: {
+        filter: "blur(0px)",
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.5, ease: "easeOut" },
+      },
+    }),
+    [],
+  );
 
-  // 2. Gunakan useEffect untuk mendeteksi posisi scroll
+  const navItems = useMemo(
+    () => [
+      {
+        id: "home",
+        section: HomeSection,
+        text: "Home",
+        icon: House,
+        label: "Home",
+      },
+      {
+        id: "about",
+        section: AboutSection,
+        text: "About",
+        icon: User,
+        label: "About",
+      },
+      {
+        id: "experiences",
+        section: ExperiencesSection,
+        text: "Experiences",
+        icon: Briefcase,
+        label: "Exp",
+      },
+      {
+        id: "projects",
+        section: ProjectsSection,
+        text: "Projects",
+        icon: FolderKanban,
+        label: "Projects",
+      },
+      {
+        id: "message",
+        section: MessageSection,
+        text: "Contact",
+        icon: Mail,
+        label: "Contact",
+      },
+    ],
+    [],
+  );
+
   useEffect(() => {
+    let ticking = false;
+    const sections = [
+      { id: "home", ref: HomeSection },
+      { id: "about", ref: AboutSection },
+      { id: "experiences", ref: ExperiencesSection },
+      { id: "projects", ref: ProjectsSection },
+      { id: "message", ref: MessageSection },
+    ];
+
     const handleScroll = () => {
-      // Offset 200px agar active-nya pindah sedikit sebelum section benar-benar sampai atas
-      const scrollPosition = window.scrollY + 300;
-
-      // Daftar section dan ID-nya
-      const sections = [
-        { id: "home", ref: HomeSection },
-        { id: "about", ref: AboutSection },
-        { id: "experiences", ref: ExperiencesSection },
-        { id: "projects", ref: ProjectsSection },
-        { id: "message", ref: MessageSection },
-      ];
-
-      // Loop untuk cek posisi
-      sections.forEach((section) => {
-        if (
-          section.ref.current &&
-          section.ref.current.offsetTop <= scrollPosition &&
-          section.ref.current.offsetTop + section.ref.current.offsetHeight >
-            scrollPosition
-        ) {
-          setActiveNav(section.id);
-        }
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollPosition = window.scrollY + 300;
+        setIsScroll(window.scrollY > 0);
+        sections.forEach((section) => {
+          if (
+            section.ref.current &&
+            section.ref.current.offsetTop <= scrollPosition &&
+            section.ref.current.offsetTop + section.ref.current.offsetHeight >
+              scrollPosition
+          ) {
+            setActiveNav(section.id);
+          }
+        });
+        ticking = false;
       });
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔹 Hitung ulang width saat index berubah / resize layar
   useEffect(() => {
     const updateWidth = () => {
-      if (measureRef.current) {
-        setMaxWidth(measureRef.current.offsetWidth);
-      }
+      if (measureRef.current) setMaxWidth(measureRef.current.offsetWidth);
     };
     updateWidth();
 
-    // Gunakan ResizeObserver agar reaktif terhadap perubahan font-size (breakpoint md)
     const resizeObserver = new ResizeObserver(updateWidth);
-    if (measureRef.current) {
-      resizeObserver.observe(measureRef.current);
-    }
+    if (measureRef.current) resizeObserver.observe(measureRef.current);
 
     window.addEventListener("resize", updateWidth);
     return () => {
@@ -105,7 +152,6 @@ const Home = () => {
     };
   }, [index]);
 
-  // 🔹 Ganti teks setiap 2 detik
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % words.length);
@@ -114,15 +160,21 @@ const Home = () => {
   }, []);
 
   const JumpToSection = (ref) => {
-    ref.current.scrollIntoView({ behavior: "smooth" });
+    ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // 🔹 Navbar shadow saat scroll
-  useEffect(() => {
-    const handleScroll = () => setIsScroll(window.scrollY > 0);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const buttons = useMemo(
+    () => [
+      { text: "Download CV", icon: faDownload, link: "#", primary: true },
+      { text: "Github", icon: faGithub, link: "https://github.com/hamma-nyk" },
+      {
+        text: "Linkedin",
+        icon: faLinkedin,
+        link: "https://linkedin.com/in/myikos",
+      },
+    ],
+    [],
+  );
 
   return (
     <Fragment>
@@ -134,89 +186,45 @@ const Home = () => {
         color="#ffffff"
         size={0.8}
       />
-      <div className="flex mx-auto w-full h-full bg-neutral-900 flex-col dark:text-white ">
-        {/* 🔹 NAVBAR */}
+      <div className="flex mx-auto w-full h-full bg-neutral-900 flex-col dark:text-white">
+        {/* NAVBAR */}
         <section
           id="navbar"
           className={`flex fixed top-0 w-full justify-center z-50 transition-all duration-300 ease-in-out ${
             isScroll
-              ? "shadow-lg transition-all bg-neutral-900/90 duration-300 ease-in-out backdrop-blur-md border-b border-neutral-700/50"
-              : "bg-neutral-900 transition-all duration-300 ease-in-out border-b border-neutral-700/0"
+              ? "shadow-lg bg-neutral-900/90 backdrop-blur-md border-b border-neutral-700/50"
+              : "bg-neutral-900 border-b border-neutral-700/0"
           }`}
         >
-          <div className="flex w-4/5 sm:w-2/3 h-20 items-center justify-between font-[500]">
-            <div className="hidden sm:flex items-center gap-2">
-              {[
-                { id: "home", section: HomeSection, text: "Home" },
-                { id: "about", section: AboutSection, text: "About" },
-                {
-                  id: "experiences",
-                  section: ExperiencesSection,
-                  text: "Experiences",
-                },
-                { id: "projects", section: ProjectsSection, text: "Projects" },
-                { id: "message", section: MessageSection, text: "Contact" },
-              ].map((item, index) => (
+          <div className="flex w-[90%] sm:w-4/5 md:w-2/3 h-16 sm:h-20 items-center justify-between font-[500]">
+            <div className="hidden sm:flex items-center gap-1 md:gap-2">
+              {navItems.map((item) => (
                 <ButtonNav
-                  key={index}
+                  key={item.id}
                   text={item.text}
-                  isActive={activeNav === item.id} // 👈 Logika Active State
+                  isActive={activeNav === item.id}
                   onClick={() => {
                     JumpToSection(item.section);
-                    setActiveNav(item.id); // Set active saat diklik
+                    setActiveNav(item.id);
                   }}
                 />
               ))}
             </div>
             <div className="flex sm:hidden justify-evenly w-full items-center px-1">
-              {[
-                {
-                  id: "home",
-                  icon: House,
-                  section: HomeSection,
-                  label: "Home",
-                },
-                {
-                  id: "about",
-                  icon: User,
-                  section: AboutSection,
-                  label: "About",
-                },
-                {
-                  id: "experiences",
-                  icon: Briefcase,
-                  section: ExperiencesSection,
-                  label: "Exp",
-                },
-                {
-                  id: "projects",
-                  icon: FolderKanban,
-                  section: ProjectsSection,
-                  label: "Projects",
-                },
-                {
-                  id: "message",
-                  icon: Mail,
-                  section: MessageSection,
-                  label: "Contact",
-                },
-              ].map((item, index) => {
-                // Cek apakah tombol ini sedang aktif
+              {navItems.map((item) => {
                 const isActive = activeNav === item.id;
-
                 return (
                   <button
-                    key={index}
+                    key={item.id}
                     onClick={() => {
                       JumpToSection(item.section);
-                      setActiveNav(item.id); // Set active langsung saat diklik biar responsif
+                      setActiveNav(item.id);
                     }}
                     aria-label={item.label}
-                    className={`group relative p-3 rounded-2xl transition-all duration-300 focus:outline-none ${
+                    className={`group relative p-2.5 rounded-2xl transition-all duration-300 focus:outline-none ${
                       isActive ? "bg-white/10" : "hover:bg-white/5"
                     }`}
                   >
-                    {/* 🔹 Background Glow (Muncul jika Active ATAU Hover) */}
                     <div
                       className={`absolute inset-0 rounded-2xl bg-gradient-to-tr from-blue-500/20 to-purple-500/20 transition-opacity duration-300 pointer-events-none ${
                         isActive
@@ -224,25 +232,14 @@ const Home = () => {
                           : "opacity-0 group-hover:opacity-100"
                       }`}
                     ></div>
-
-                    {/* 🔹 Icon Styling */}
                     <item.icon
-                      className={`relative z-10 w-6 h-6 transition-colors duration-300 drop-shadow-sm ${
+                      className={`relative z-10 w-5 h-5 transition-colors duration-300 drop-shadow-sm ${
                         isActive
                           ? "text-blue-300"
                           : "text-gray-400 group-hover:text-blue-300"
                       }`}
-                      strokeWidth={isActive ? 2 : 2} // Icon lebih tebal jika aktif
+                      strokeWidth={2}
                     />
-
-                    {/* 🔹 Active Indicator (Titik di bawah icon) */}
-                    {/*<span
-                      className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-400 transition-all duration-300 ${
-                        isActive
-                          ? "opacity-100 scale-100"
-                          : "opacity-0 scale-0 group-hover:opacity-50"
-                      }`}
-                    ></span>*/}
                   </button>
                 );
               })}
@@ -250,20 +247,19 @@ const Home = () => {
           </div>
         </section>
 
-        {/* 🔹 HOME SECTION */}
+        {/* HOME SECTION */}
         <section
           id="home"
           ref={HomeSection}
           className="flex flex-col mx-auto justify-center"
         >
-          <div className="flex flex-col h-screen w-full items-start justify-center">
-            {/* 1. TEXT ANIMATION (Staggered Word Blur) */}
+          <div className="flex flex-col h-screen w-full items-start justify-center px-4 sm:px-0">
             <motion.h1
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="text-3xl sm:text-5xl font-[700] px-5 relative text-white mb-6 leading-tight"
+              className="text-3xl sm:text-3xl md:text-5xl font-[700] px-1 sm:px-5 relative text-white mb-4 sm:mb-6 leading-tight"
             >
               <div className="flex flex-wrap items-center">
                 {"Hello there!".split(" ").map((word, i) => (
@@ -290,13 +286,12 @@ const Home = () => {
                 ))}
                 <motion.span
                   variants={wordVariants}
-                  className="text-3xl sm:text-5xl font-[700] text-transparent bg-clip-text bg-gradient-to-br from-pink-400 via-purple-500 to-blue-400"
+                  className="text-2xl sm:text-3xl md:text-5xl font-[700] text-transparent bg-clip-text bg-gradient-to-br from-pink-400 via-purple-500 to-blue-400"
                 >
                   Iko
                 </motion.span>
               </div>
 
-              {/* Dynamic Text (Tetap menggunakan efek bawaan Anda, tapi dibungkus motion.div untuk ikut antrean stagger awal) */}
               <motion.div
                 variants={wordVariants}
                 className="inline-block overflow-hidden align-top mt-2"
@@ -312,17 +307,16 @@ const Home = () => {
                     animate={{ y: "0%", opacity: 1 }}
                     exit={{ y: "-100%", opacity: 0 }}
                     transition={{ duration: 0.5, ease: "easeInOut" }}
-                    className="block font-[700] text-blue-400 text-3xl sm:text-5xl"
+                    className="block font-[700] text-blue-400 text-2xl sm:text-3xl md:text-5xl"
                   >
                     {words[index]}
                   </motion.span>
                 </AnimatePresence>
               </motion.div>
 
-              {/* 🔹 Hidden element for width measurement */}
               <span
                 ref={measureRef}
-                className="opacity-0 absolute left-0 top-0 font-[700] text-3xl sm:text-5xl whitespace-nowrap pointer-events-none select-none"
+                className="opacity-0 absolute left-0 top-0 font-[700] text-2xl sm:text-3xl md:text-5xl whitespace-nowrap pointer-events-none select-none"
               >
                 I'm a Web Developer
               </span>
@@ -331,74 +325,29 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }} // Muncul setelah teks selesai
+              transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
               viewport={{ once: true }}
               className="w-full"
             >
               <CodeTemplate />
             </motion.div>
-            {/*<div className="flex gap-3 sm:gap-4 pt-10 text-sm px-5">
-              <ButtonHome
-                link="#"
-                icon={faDownload}
-                text="Download CV"
-                additionalClass="hidden sm:inline"
-              />
-              <ButtonHome
-                link="https://github.com/hamma-nyk"
-                icon={faGithub}
-                text="Github"
-                additionalClass={"ml-2 sm:ml-0"}
-              />
-              <ButtonHome
-                link="https://linkedin.com/in/myikos"
-                icon={faLinkedin}
-                text="Linkedin"
-                additionalClass={"ml-2 sm:ml-0"}
-              />
-            </div>*/}
-            {/* 3. UNIFIED BUTTONS (Satu Tema) */}
+
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1, ease: "easeOut" }} // Muncul paling akhir
+              transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
               viewport={{ once: true }}
-              className="flex flex-wrap gap-2 sm:gap-4 pl-5 sm:pl-5"
+              className="flex flex-wrap gap-2 sm:gap-4 pl-1 sm:pl-5"
             >
-              {[
-                {
-                  text: "Download CV",
-                  icon: faDownload,
-                  link: "#",
-                  primary: true,
-                }, // Primary flag jika ingin sedikit beda
-                {
-                  text: "Github",
-                  icon: faGithub,
-                  link: "https://github.com/hamma-nyk",
-                },
-                {
-                  text: "Linkedin",
-                  icon: faLinkedin,
-                  link: "https://linkedin.com/in/myikos",
-                },
-              ].map((btn, idx) => (
+              {buttons.map((btn, idx) => (
                 <a
                   key={idx}
                   href={btn.link}
                   target={btn.link === "#" ? "_self" : "_blank"}
                   rel="noopener noreferrer"
-                  // HAPUS: hover:border-transparent
-                  // TAMBAH: hover:border-purple-500/50 (Langsung ganti warna border parent saat hover)
-                  className="w-10 sm:w-auto mt-6 text-sm group relative px-3 sm:px-5 py-3 rounded-xl bg-neutral-800/80 backdrop-blur-sm border border-neutral-700/50 text-gray-300 font-medium transition-all duration-300 hover:text-white hover:-translate-y-1 overflow-hidden hover:border-purple-500/50"
+                  className="w-10 sm:w-auto mt-4 sm:mt-6 text-sm group relative px-3 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-neutral-800/80 border border-neutral-700/50 text-gray-300 font-medium transition-all duration-300 hover:text-white hover:-translate-y-1 overflow-hidden hover:border-purple-500/50"
                 >
-                  {/* Gradient Hover Background Effect (Tetap simpan ini untuk efek glowing dalam) */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                  {/* HAPUS DIV BORDER GLOW EFFECT YANG LAMA */}
-                  {/* Karena border color sudah dihandle oleh parent <a> di atas */}
-
-                  {/* Button Content */}
                   <div className="relative flex items-center gap-3 z-10">
                     <FontAwesomeIcon
                       icon={btn.icon}
@@ -414,11 +363,13 @@ const Home = () => {
           </div>
         </section>
 
-        <About goto={AboutSection} />
-        <Experiences goto={ExperiencesSection} />
-        <Projects goto={ProjectsSection} />
-        <Message goto={MessageSection} />
-        <ChatBot />
+        <Suspense fallback={null}>
+          <About goto={AboutSection} />
+          <Experiences goto={ExperiencesSection} />
+          <Projects goto={ProjectsSection} />
+          <Message goto={MessageSection} />
+          <ChatBot />
+        </Suspense>
       </div>
     </Fragment>
   );

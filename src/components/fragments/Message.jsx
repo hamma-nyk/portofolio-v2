@@ -90,7 +90,7 @@ const Message = ({ goto }) => {
       <section
         id="messages"
         ref={goto}
-        className="flex flex-col w-full justify-center py-24 min-h-screen relative overflow-hidden"
+        className="flex flex-col w-full justify-center py-16 sm:py-24 min-h-screen relative overflow-hidden"
       >
         {/* Background Glow Effect (Opsional, untuk estetika) */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -102,7 +102,7 @@ const Message = ({ goto }) => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="text-4xl sm:text-5xl font-bold text-center text-white mb-6 tracking-tight"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-4 sm:mb-6 tracking-tight"
           >
             Get in{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
@@ -192,7 +192,7 @@ const Message = ({ goto }) => {
             <div className="w-full max-w-lg transition-all duration-500">
               <div
                 // className={`relative bg-neutral-800/50 backdrop-blur-md border rounded-3xl p-8 shadow-lg transition-all duration-500 ${
-                className={`relative bg-neutral-800/50 border rounded-3xl p-8 shadow-lg transition-all duration-500 ${
+                className={`relative bg-neutral-800/50 border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-lg transition-all duration-500 ${
                   activeTab === "email"
                     ? // ? "border-blue-500/20 shadow-blue-500/5"
                       // : "border-purple-500/20 shadow-purple-500/5"

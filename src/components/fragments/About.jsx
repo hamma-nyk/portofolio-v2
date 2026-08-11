@@ -1,6 +1,4 @@
 import { Fragment } from "react";
-import ButtonCard from "../elements/ButtonCard";
-import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
 import { MonitorCog, CodeXml, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -82,7 +80,7 @@ const About = (props) => {
       <section
         id="about"
         ref={goto}
-        className="relative w-full py-24 px-4 overflow-hidden min-h-screen flex flex-col justify-center"
+        className="relative w-full py-16 sm:py-24 px-4 overflow-hidden min-h-screen flex flex-col justify-center"
       >
         {/* --- Background Glow Effects --- */}
         <div className="absolute bottom-35 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -97,7 +95,7 @@ const About = (props) => {
             viewport={{ once: true, amount: 0.2 }} // Animasi jalan 1x saat 20% elemen terlihat
             className="text-center mb-16"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
               About{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                 Me
@@ -166,7 +164,7 @@ const About = (props) => {
           </motion.div>
 
           {/* --- Cards Container --- */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* === CARD 1: IT SUPPORT === */}
             {/* <div className="group relative bg-neutral-800/50 backdrop-blur-md border border-neutral-700 hover:border-blue-500/30 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"> */}
             <motion.div
@@ -174,7 +172,7 @@ const About = (props) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.05, ease: "easeOut" }}
               viewport={{ once: true, amount: 0.2 }}
-              className="group relative bg-neutral-800/50 border border-neutral-700 hover:border-blue-500/30 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"
+              className="group relative bg-neutral-800/50 border border-neutral-700 hover:border-blue-500/30 rounded-2xl p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"
             >
               <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
@@ -231,7 +229,7 @@ const About = (props) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: 0.1, ease: "easeOut" }}
               viewport={{ once: true, amount: 0.2 }}
-              className="group relative bg-neutral-800/50 backdrop-blur-md border border-neutral-700 hover:border-purple-500/30 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"
+              className="group relative bg-neutral-800/50 border border-neutral-700 hover:border-purple-500/30 rounded-2xl p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"
             >
               <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 

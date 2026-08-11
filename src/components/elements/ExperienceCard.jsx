@@ -25,7 +25,7 @@ const ExperienceCard = ({
         {/* Card */}
         <div
           // className={`bg-neutral-800/50 backdrop-blur-md border border-neutral-700 p-5 rounded-xl shadow-lg w-[90%] sm:w-[45%] ${
-          className={`bg-neutral-800/50 border border-neutral-700 p-5 rounded-xl shadow-lg w-[90%] sm:w-[45%] ${
+          className={`bg-neutral-800/50 border border-neutral-700 p-3 sm:p-5 rounded-xl shadow-lg w-[90%] sm:w-[45%] ${
             side === "right"
               ? "sm:ml-auto sm:text-left"
               : "sm:mr-auto sm:text-right"
@@ -37,16 +37,17 @@ const ExperienceCard = ({
             onClick={() => setOpen(!open)}
           >
             <div className="flex items-center gap-4">
-              <div className="min-w-14 min-h-14 h-14 w-14 rounded-lg bg-neutral-800 flex items-center justify-center overflow-hidden border border-neutral-600">
+              <div className="min-w-12 min-h-12 h-12 w-12 sm:min-w-14 sm:min-h-14 sm:h-14 sm:w-14 rounded-lg bg-neutral-800 flex items-center justify-center overflow-hidden border border-neutral-600">
                 <img
                   src={img}
                   alt={title}
+                  loading="lazy"
                   className="object-cover w-full h-full"
                 />
               </div>
               <div className="text-left">
-                <h3 className="text-lg font-semibold text-white">{title}</h3>
-                <p className="text-blue-300 text-sm">{position}</p>
+                <h3 className="text-base sm:text-lg font-semibold text-white">{title}</h3>
+                <p className="text-blue-300 text-xs sm:text-sm">{position}</p>
               </div>
             </div>
 

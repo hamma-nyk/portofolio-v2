@@ -93,7 +93,7 @@ const Experiences = (props) => {
       <section
         id="experiences"
         ref={goto}
-        className="relative w-full py-24 px-4 overflow-hidden min-h-screen"
+        className="relative w-full py-16 sm:py-24 px-4 overflow-hidden min-h-screen"
       >
         {/* --- Background Glow Effects (Konsisten dengan section lain) --- */}
         <div className="absolute top-1/3 -left-30 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -108,7 +108,7 @@ const Experiences = (props) => {
             viewport={{ once: true, amount: 0.2 }}
             className="text-center mb-20"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
               Professional{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                 Journey
