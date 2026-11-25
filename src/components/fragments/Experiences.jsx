@@ -91,7 +91,7 @@ const Experiences = (props) => {
       <section
         id="experiences"
         ref={goto}
-        className="relative w-full py-16 sm:py-24 px-4 overflow-hidden min-h-screen"
+        className="relative w-full py-24 px-4 overflow-hidden min-h-screen"
       >
 
         <div className="relative z-10 max-w-6xl mx-auto">
@@ -103,7 +103,7 @@ const Experiences = (props) => {
             viewport={{ once: true, amount: 0.2 }}
             className="text-center mb-20"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight">
               Professional{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                 Journey
