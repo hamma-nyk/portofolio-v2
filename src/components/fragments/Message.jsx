@@ -118,7 +118,11 @@ const Message = ({ goto }) => {
       <section
         id="messages"
         ref={goto}
+<<<<<<< HEAD
         className="flex flex-col w-full justify-center py-24 px-4 min-h-screen relative overflow-hidden"
+=======
+        className="flex flex-col w-full justify-center py-16 sm:py-24 min-h-screen relative overflow-hidden"
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
       >
         <div className="relative z-10 max-w-5xl mx-auto w-full">
           {/* Header */}
@@ -127,7 +131,11 @@ const Message = ({ goto }) => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             viewport={{ once: true }}
+<<<<<<< HEAD
             className="text-center mb-14"
+=======
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-4 sm:mb-6 tracking-tight"
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
           >
             <h1 className="text-4xl sm:text-5xl font-bold text-white mb-5 tracking-tight">
               Get in{" "}
@@ -136,6 +144,7 @@ const Message = ({ goto }) => {
               </span>
             </h1>
 
+<<<<<<< HEAD
             <motion.p
               variants={containerVariants}
               initial="hidden"
@@ -150,6 +159,104 @@ const Message = ({ goto }) => {
                     key={`msg-${i}`}
                     variants={wordVariants}
                     className="mr-[0.25em]"
+=======
+          <motion.p
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.5 }}
+            className="w-11/12 sm:w-1/2 mx-auto flex mb-10 flex-wrap justify-center text-center text-gray-400 leading-relaxed text-sm sm:text-base"
+          >
+            {"Have a project in mind or just want to chat? Choose your preferred platform below."
+              .split(" ")
+              .map((word, i) => (
+                <motion.span
+                  key={`msg-${i}`}
+                  variants={wordVariants}
+                  className="mr-[0.25em]"
+                >
+                  {word}
+                </motion.span>
+              ))}
+          </motion.p>
+
+          {/* --- Tab Switcher Modern --- */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="flex justify-center mb-10"
+          >
+            <div className="relative flex bg-neutral-800/80 p-1.5 rounded-full border border-neutral-700 shadow-lg w-72">
+              {/* Sliding Background */}
+              <div
+                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shadow-md ${
+                  activeTab === "email"
+                    ? "translate-x-0 bg-gradient-to-r from-blue-600 to-blue-500"
+                    : "translate-x-full left-1.5 bg-gradient-to-r from-purple-600 to-purple-500"
+                }`}
+              ></div>
+
+              {/* Email Button */}
+              <button
+                onClick={() => {
+                  setActiveTab("email");
+                  setSent(false);
+                }}
+                className={`relative z-10 w-1/2 text-center font-medium py-2.5 rounded-full transition-colors duration-300 text-sm flex items-center justify-center gap-2 ${
+                  activeTab === "email"
+                    ? "text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Mail size={16} /> Email
+              </button>
+
+              {/* Telegram Button */}
+              <button
+                onClick={() => {
+                  setActiveTab("telegram");
+                  setSent(false);
+                }}
+                className={`relative z-10 w-1/2 text-center font-medium py-2.5 rounded-full transition-colors duration-300 text-sm flex items-center justify-center gap-2 ${
+                  activeTab === "telegram"
+                    ? "text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Send size={16} /> Telegram
+              </button>
+            </div>
+          </motion.div>
+
+          {/* --- Unified Form Container --- */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="w-full flex justify-center px-4"
+          >
+            {" "}
+            <div className="w-full max-w-lg transition-all duration-500">
+              <div
+                // className={`relative bg-neutral-800/50 backdrop-blur-md border rounded-3xl p-8 shadow-lg transition-all duration-500 ${
+                className={`relative bg-neutral-800/50 border rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-lg transition-all duration-500 ${
+                  activeTab === "email"
+                    ? // ? "border-blue-500/20 shadow-blue-500/5"
+                      // : "border-purple-500/20 shadow-purple-500/5"
+                      "border-neutral-700 shadow-blue-500/5"
+                    : "border-neutral-700 shadow-purple-500/5"
+                }`}
+              >
+                {/* EMAIL FORM */}
+                {activeTab === "email" && (
+                  <form
+                    ref={form}
+                    onSubmit={sendEmail}
+                    className="flex flex-col gap-5"
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
                   >
                     {word}
                   </motion.span>

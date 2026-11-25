@@ -28,6 +28,7 @@ const ExperienceCard = ({
             : "bg-neutral-900 border-neutral-600"
         }`}
       >
+<<<<<<< HEAD
         <span
           className={`w-1.5 h-1.5 rounded-full ${
             isCurrent
@@ -74,6 +75,38 @@ const ExperienceCard = ({
                 decoding="async"
                 className="object-cover w-full h-full rounded-lg"
               />
+=======
+        {/* Dot */}
+        <div className="absolute top-1/2 left-[-6px] sm:left-1/2 transform sm:-translate-x-1/2 bg-blue-400 w-4 h-4 rounded-full border-3 border-neutral-800 z-10"></div>
+
+        {/* Card */}
+        <div
+          // className={`bg-neutral-800/50 backdrop-blur-md border border-neutral-700 p-5 rounded-xl shadow-lg w-[90%] sm:w-[45%] ${
+          className={`bg-neutral-800/50 border border-neutral-700 p-3 sm:p-5 rounded-xl shadow-lg w-[90%] sm:w-[45%] ${
+            side === "right"
+              ? "sm:ml-auto sm:text-left"
+              : "sm:mr-auto sm:text-right"
+          }`}
+        >
+          {/* Header (click to expand) */}
+          <div
+            className="flex items-center justify-between cursor-pointer select-none"
+            onClick={() => setOpen(!open)}
+          >
+            <div className="flex items-center gap-4">
+              <div className="min-w-12 min-h-12 h-12 w-12 sm:min-w-14 sm:min-h-14 sm:h-14 sm:w-14 rounded-lg bg-neutral-800 flex items-center justify-center overflow-hidden border border-neutral-600">
+                <img
+                  src={img}
+                  alt={title}
+                  loading="lazy"
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="text-left">
+                <h3 className="text-base sm:text-lg font-semibold text-white">{title}</h3>
+                <p className="text-blue-300 text-xs sm:text-sm">{position}</p>
+              </div>
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
             </div>
 
             <div className="min-w-0 text-left">

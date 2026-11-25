@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+<<<<<<< HEAD
 import {
   MonitorCog,
   CodeXml,
@@ -9,6 +10,9 @@ import {
   Server,
   Terminal,
 } from "lucide-react";
+=======
+import { MonitorCog, CodeXml, ExternalLink } from "lucide-react";
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
 import { motion } from "framer-motion";
 import {
   SiReact,
@@ -131,7 +135,7 @@ const About = ({ goto }) => {
       <section
         id="about"
         ref={goto}
-        className="relative w-full py-24 px-4 overflow-hidden min-h-screen flex flex-col justify-center"
+        className="relative w-full py-16 sm:py-24 px-4 overflow-hidden min-h-screen flex flex-col justify-center"
       >
         {/* Background Glow Effects */}
         <div className="absolute bottom-35 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -146,7 +150,7 @@ const About = ({ goto }) => {
             viewport={{ once: true, amount: 0.2 }}
             className="text-center mb-14"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 tracking-tight">
               About{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                 Me
@@ -208,6 +212,7 @@ const About = ({ goto }) => {
             </motion.p>
           </motion.div>
 
+<<<<<<< HEAD
           {/* --- Top Summary Banner + Stats --- */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -221,6 +226,27 @@ const About = ({ goto }) => {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800 border border-neutral-700/80 text-xs font-medium text-gray-300 mb-3">
                   <Terminal size={13} className="text-blue-400" />
                   <span>Infrastructure Meets Software Engineering</span>
+=======
+          {/* --- Cards Container --- */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {/* === CARD 1: IT SUPPORT === */}
+            {/* <div className="group relative bg-neutral-800/50 backdrop-blur-md border border-neutral-700 hover:border-blue-500/30 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"> */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.05, ease: "easeOut" }}
+              viewport={{ once: true, amount: 0.2 }}
+              className="group relative bg-neutral-800/50 border border-neutral-700 hover:border-blue-500/30 rounded-2xl p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"
+            >
+              <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400 group-hover:bg-blue-500/20 transition-colors">
+                    <MonitorCog size={32} strokeWidth={2} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">IT Support</h2>
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-2.5">
                   Practical problem solver across networks, servers, and code.
@@ -325,7 +351,11 @@ const About = ({ goto }) => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
               viewport={{ once: true, amount: 0.2 }}
+<<<<<<< HEAD
               className="group bg-neutral-900/85 backdrop-blur-md border border-neutral-800 hover:border-purple-500/40 rounded-2xl p-6 sm:p-8 transition-colors duration-300 shadow-xl shadow-black/25 flex flex-col"
+=======
+              className="group relative bg-neutral-800/50 border border-neutral-700 hover:border-purple-500/30 rounded-2xl p-5 sm:p-8 transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-black/20"
+>>>>>>> 78059343c7dd04263750be22a889f70648d31ef6
             >
               <div className="flex items-center justify-between gap-4 mb-5">
                 <div className="flex items-center gap-3.5">
