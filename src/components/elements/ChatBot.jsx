@@ -1,54 +1,47 @@
 import { useState, useRef, useEffect } from "react";
 import {
   Send,
-  MessageCircle,
   X,
   Bot,
   User,
-  Loader2,
   Sparkles,
+  RotateCcw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+
+const INITIAL_MESSAGE = {
+  role: "system",
+  content:
+    "Halo! 👋 Saya **Asia**, asisten AI Iko. Tanya apa saja tentang portofolio, pengalaman, atau proyek Iko.\n\nHi! 👋 I’m **Asia**, Iko’s AI assistant. Ask me anything about Iko’s portfolio, skills, or projects.",
+};
+
+const QUICK_PROMPTS = [
+  "What are Iko's main skills?",
+  "Tell me about Iko's projects",
+  "How can I contact Iko?",
+];
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // 1. State & Data untuk Animasi Partikel Awal
-  const [showBot, setShowBot] = useState(false);
-  const particles = Array.from({ length: 12 });
-
-  const [messages, setMessages] = useState([
-    {
-      role: "system",
-      content: `Halo! 👋 Saya **Asia**, asisten pribadi Iko. Tanya apa saja tentang portofolio, skill, atau proyek Iko.\n\nHi! 👋 I’m **Asia**, Iko’s personal assistant. Ask me anything about Iko’s portfolio, skills, or projects.`,
-    },
-  ]);
+  const [messages, setMessages] = useState([INITIAL_MESSAGE]);
 
   const scrollRef = useRef(null);
-
-  // Timer untuk memunculkan tombol bot setelah partikel berkumpul (1.2 detik)
-  useEffect(() => {
-    const timer = setTimeout(() => setShowBot(true), 1200);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Auto-scroll ke pesan terbaru
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
-  // Fungsi Kirim Pesan ke API
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const sendMessageToApi = async (text) => {
+    const trimmed = text.trim();
+    if (!trimmed || isLoading) return;
 
-    // Tambahkan pesan user ke UI
-    const userMessage = { role: "user", content: input };
+    const userMessage = { role: "user", content: trimmed };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
@@ -60,7 +53,7 @@ const ChatBot = () => {
           "Content-Type": "application/json",
           "X-Secret-Token": "alahtempek-123",
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: trimmed }),
       });
 
       const data = await response.json();
@@ -84,110 +77,160 @@ const ChatBot = () => {
     }
   };
 
+  const handleSend = async (e) => {
+    e.preventDefault();
+    await sendMessageToApi(input);
+  };
+
+  const handleReset = () => {
+    if (isLoading) return;
+    setMessages([INITIAL_MESSAGE]);
+  };
+
   return (
-    <div className="fixed bottom-5 right-5 z-[100] flex flex-col items-end">
+    <div className="fixed bottom-5 right-4 sm:right-6 z-[100] flex flex-col items-end">
       {/* 🔹 Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 18, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="mb-4 w-[350px] sm:w-[380px] h-[500px] max-h-[80vh] bg-neutral-900  border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            exit={{ opacity: 0, y: 18, scale: 0.96 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="mb-3.5 w-[calc(100vw-2rem)] sm:w-[400px] h-[520px] max-h-[78vh] bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden flex flex-col"
           >
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-b border-white/10 flex justify-between items-center">
+            <div className="px-4 py-3.5 bg-neutral-950/90 border-b border-neutral-800 flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center border border-white/20">
-                  <User size={20} className="text-white" />
+                <div className="relative w-10 h-10 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center shrink-0">
                   <img
-                    className="absolute w-full h-full object-cover rounded-full"
-                    src="./assets/image/asia.png"
-                    alt=""
+                    className="w-full h-full object-cover rounded-xl"
+                    src="/assets/image/asia.png"
+                    alt="Asia AI Assistant"
                   />
-                  <span className="absolute -bottom-0 -right-1 w-3 h-3 bg-green-500 border-2 border-neutral-900 rounded-full"></span>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-neutral-950 rounded-full" />
                 </div>
 
                 <div>
-                  <h3 className="text-white font-bold text-sm flex items-center gap-1">
-                    Asia Assistant{" "}
-                    <span className="px-1.5 py-0.5 rounded text-[8px] bg-blue-500/20 text-blue-300 font-medium border border-blue-500/30">
+                  <h3 className="text-white font-bold text-sm flex items-center gap-1.5">
+                    <span>Asia</span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-blue-500/15 text-blue-300 font-medium border border-blue-500/30">
+                      <Sparkles size={10} />
                       AI
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[8px] bg-neutral-500/20 text-neutral-300 font-medium border border-neutral-500/30">
-                      Beta 1.0
-                    </span>
                   </h3>
-                  <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
-                    Online & Ready
+                  <p className="text-[11px] text-emerald-400/90 flex items-center gap-1 mt-0.5">
+                    Online &bull; Portfolio Assistant
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="cursor-pointer text-gray-400 hover:text-white transition-colors"
-              >
-                <X size={20} />
-              </button>
+
+              <div className="flex items-center gap-1.5">
+                {messages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    title="Reset chat"
+                    aria-label="Reset chat"
+                    className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-neutral-800 border border-transparent hover:border-neutral-700 transition-colors cursor-pointer"
+                  >
+                    <RotateCcw size={15} />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close chat"
+                  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-neutral-800 border border-transparent hover:border-neutral-700 transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Messages Area */}
             <div
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 space-y-4"
+              className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-900"
             >
-              {messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex gap-3 ${
-                    msg.role === "user" ? "flex-row-reverse" : "flex-row"
-                  }`}
-                >
+              {messages.map((msg, idx) => {
+                const isUser = msg.role === "user";
+                return (
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                      msg.role === "user"
-                        ? "bg-purple-500/20"
-                        : "bg-blue-500/20"
+                    key={idx}
+                    className={`flex gap-2.5 ${
+                      isUser ? "flex-row-reverse" : "flex-row"
                     }`}
                   >
-                    {msg.role === "user" ? (
-                      <User size={14} className="text-purple-400" />
-                    ) : (
-                      <Bot size={14} className="text-blue-400" />
-                    )}
-                  </div>
-
-                  <div
-                    className={`p-3 rounded-2xl text-sm leading-relaxed max-w-[80%] whitespace-pre-line ${
-                      msg.role === "user"
-                        ? "bg-purple-500/20 text-purple-100 rounded-tr-none border border-purple-500/20"
-                        : "bg-blue-600/20 text-blue-50 rounded-tl-none border border-blue-500/20"
-                    }`}
-                  >
-                    <ReactMarkdown
-                      components={{
-                        strong: ({ children }) => (
-                          <strong className="font-semibold text-white">
-                            {children}
-                          </strong>
-                        ),
-                      }}
+                    <div
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border mt-0.5 ${
+                        isUser
+                          ? "bg-purple-500/15 border-purple-500/30 text-purple-300"
+                          : "bg-blue-500/15 border-blue-500/30 text-blue-300"
+                      }`}
                     >
-                      {msg.content}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-              ))}
+                      {isUser ? <User size={14} /> : <Bot size={14} />}
+                    </div>
 
-              {isLoading && (
-                <div className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-                    <Bot size={14} className="text-blue-400" />
+                    <div
+                      className={`px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed max-w-[82%] whitespace-pre-line ${
+                        isUser
+                          ? "bg-purple-600/20 text-purple-50 rounded-tr-sm border border-purple-500/30"
+                          : "bg-neutral-800/80 text-gray-200 rounded-tl-sm border border-neutral-700/70"
+                      }`}
+                    >
+                      <ReactMarkdown
+                        components={{
+                          strong: ({ children }) => (
+                            <strong className="font-semibold text-white">
+                              {children}
+                            </strong>
+                          ),
+                          a: ({ href, children }) => (
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-400 underline hover:text-blue-300"
+                            >
+                              {children}
+                            </a>
+                          ),
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
                   </div>
-                  <div className="p-3 rounded-2xl rounded-tl-none bg-neutral-800 border border-neutral-700 flex items-center gap-2">
-                    <Loader2 size={16} className="text-blue-400 animate-spin" />
-                    <span className="text-xs text-gray-400">Typing...</span>
+                );
+              })}
+
+              {/* Quick Prompt Suggestions (when conversation just started) */}
+              {messages.length === 1 && !isLoading && (
+                <div className="pt-2 pl-9 flex flex-wrap gap-2">
+                  {QUICK_PROMPTS.map((prompt, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => sendMessageToApi(prompt)}
+                      className="text-left text-xs px-3 py-1.5 rounded-full bg-neutral-800/90 border border-neutral-700 hover:border-blue-500/60 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Typing Indicator */}
+              {isLoading && (
+                <div className="flex gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-300 flex items-center justify-center shrink-0">
+                    <Bot size={14} />
+                  </div>
+                  <div className="px-4 py-3 rounded-2xl rounded-tl-sm bg-neutral-800/80 border border-neutral-700/70 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" />
                   </div>
                 </div>
               )}
@@ -196,22 +239,23 @@ const ChatBot = () => {
             {/* Input Area */}
             <form
               onSubmit={handleSend}
-              className="p-3 bg-neutral-900/50 border-t border-white/5"
+              className="p-3 bg-neutral-950/90 border-t border-neutral-800"
             >
-              <div className="relative flex items-center">
+              <div className="relative flex items-center bg-neutral-900 border border-neutral-800 focus-within:border-blue-500/60 rounded-xl transition-colors">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask anything about Iko..."
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl py-3 pl-4 pr-12 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                  className="w-full bg-transparent py-3 pl-4 pr-12 text-xs sm:text-sm text-white placeholder:text-gray-500 focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="cursor-pointer absolute right-2 p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-all"
+                  aria-label="Send message"
+                  className="cursor-pointer absolute right-1.5 p-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-lg text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
-                  <Send size={16} />
+                  <Send size={15} />
                 </button>
               </div>
             </form>
@@ -219,85 +263,46 @@ const ChatBot = () => {
         )}
       </AnimatePresence>
 
-      {/* 🔹 FAB & Sonar Ping Container */}
-      <div className="relative w-14 h-14 flex items-center justify-center">
-        {/* --- ANIMASI SONAR PING (SMOOTH, NO BLINK) --- */}
-        {!isOpen &&
-          [0, 1, 2].map((index) => (
-            <motion.div
-              key={index}
-              className="absolute inset-0 rounded-full border-2 border-blue-400/50"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{
-                scale: [0.8, 2.5],
-                opacity: [0, 0.5, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                delay: index * 1,
-                ease: "easeOut",
-              }}
-            />
-          ))}
+      {/* 🔹 Modern AI Trigger Button */}
+      <motion.button
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.3 }}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.96 }}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close AI Assistant" : "Open AI Assistant"}
+        className={`group relative flex items-center gap-2.5 rounded-full border shadow-xl shadow-black/50 transition-all duration-300 cursor-pointer select-none ${
+          isOpen
+            ? "p-3.5 bg-neutral-900 border-neutral-700 hover:border-red-500/50 text-white"
+            : "p-2.5 sm:pl-2.5 sm:pr-4 sm:py-2 bg-neutral-900 border-neutral-700/90 hover:border-blue-500/60 text-white"
+        }`}
+      >
+        {isOpen ? (
+          <X size={22} className="text-gray-300 group-hover:text-white" />
+        ) : (
+          <>
+            <div className="relative w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shrink-0">
+              <Sparkles size={17} className="text-white" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-neutral-900 rounded-full" />
+            </div>
 
-        {/* --- TOMBOL CHATBOT UTAMA (FAB) --- */}
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{
-            type: "spring",
-            stiffness: 200,
-            damping: 15,
-            delay: 0.5,
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(!isOpen)}
-          // 🔹 KUNCI 1: Paksa Hardware Acceleration via Style agar tidak bergetar (jitter) saat hover/scale
-          style={{
-            backfaceVisibility: "hidden",
-            WebkitFontSmoothing: "antialiased",
-          }}
-          className="cursor-pointer absolute z-10 group flex items-center justify-center w-full h-full rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-xl shadow-neutral-900 text-white overflow-hidden border border-white/10"
-        >
-          <div className="absolute inset-0 bg-white/20 group-hover:opacity-100 opacity-0 transition-opacity duration-300"></div>
+            <div className="hidden sm:flex flex-col items-start text-left pr-1">
+              <span className="text-xs font-bold text-white leading-none flex items-center gap-1">
+                Ask Asia
+              </span>
+              <span className="text-[10px] text-blue-400 font-mono mt-0.5 leading-none">
+                AI Assistant
+              </span>
+            </div>
+          </>
+        )}
 
-          {/* 🔹 KUNCI 2: Bungkus AnimatePresence dalam kontainer mutlak (absolute) yang dikunci ke tengah */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <AnimatePresence mode="wait">
-              {isOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.15 }} // ⚡ Percepat sedikit transisinya agar lebih responsif
-                  className="absolute" // 🔹 KUNCI 3: Lepaskan div ini dari efek Flexbox parent-nya
-                >
-                  <X size={26} />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="chat"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute"
-                >
-                  <MessageCircle size={26} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Notification Dot */}
-          {!isOpen && messages.length > 1 && (
-            <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 border-2 border-neutral-900 rounded-full z-20"></span>
-          )}
-        </motion.button>
-      </div>
+        {/* Unread / Active Dot (Mobile) */}
+        {!isOpen && messages.length > 1 && (
+          <span className="sm:hidden absolute -top-0.5 -right-0.5 w-3 h-3 bg-blue-500 border-2 border-neutral-900 rounded-full" />
+        )}
+      </motion.button>
     </div>
   );
 };

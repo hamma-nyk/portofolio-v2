@@ -1,7 +1,22 @@
 import { Fragment, useState, useRef } from "react";
 import emailjs from "emailjs-com";
-import { Mail, Send, User, MessageSquare, AtSign, Hash } from "lucide-react"; // Pastikan import icon ini
-import { motion } from "framer-motion";
+import {
+  Mail,
+  Send,
+  User,
+  MessageSquare,
+  AtSign,
+  Hash,
+  MapPin,
+  Clock,
+  Sparkles,
+  CheckCircle2,
+  Loader2,
+  ArrowUpRight,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Message = ({ goto }) => {
   const [sending, setSending] = useState(false);
@@ -12,8 +27,6 @@ const Message = ({ goto }) => {
   const sendEmail = (e) => {
     e.preventDefault();
     setSending(true);
-
-    const currentTime = new Date().toLocaleString();
 
     emailjs
       .sendForm(
@@ -27,6 +40,7 @@ const Message = ({ goto }) => {
           setSent(true);
           setSending(false);
           e.target.reset();
+          setTimeout(() => setSent(false), 3500);
         },
         (error) => {
           alert("Failed to send message: " + error.text);
@@ -35,7 +49,6 @@ const Message = ({ goto }) => {
       );
   };
 
-  // --- Tambahkan konfigurasi animasi ini sebelum return ---
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -45,15 +58,14 @@ const Message = ({ goto }) => {
   };
 
   const wordVariants = {
-    hidden: { filter: "blur(12px)", opacity: 0, y: 10 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
-      filter: "blur(0px)",
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: { duration: 0.35, ease: "easeOut" },
     },
   };
-  // ---------------------------------------------------------
+
   const sendMessage = async (e) => {
     e.preventDefault();
     setSending(true);
@@ -76,282 +88,440 @@ const Message = ({ goto }) => {
       await fetch(url);
       setSent(true);
       e.target.reset();
-      setTimeout(() => setSent(false), 3000);
-    } catch (err) {
+      setTimeout(() => setSent(false), 3500);
+    } catch {
       alert("Failed to send message. Please try again!");
     } finally {
       setSending(false);
     }
   };
-  return (
-    // ... (kode import lainnya)
 
+  const tabs = [
+    {
+      id: "email",
+      label: "Email",
+      icon: Mail,
+      gradient: "from-blue-600 to-blue-500",
+    },
+    {
+      id: "telegram",
+      label: "Telegram",
+      icon: Send,
+      gradient: "from-purple-600 to-purple-500",
+    },
+  ];
+
+  const isEmail = activeTab === "email";
+
+  return (
     <Fragment>
       <section
         id="messages"
         ref={goto}
-        className="flex flex-col w-full justify-center py-24 min-h-screen relative overflow-hidden"
+        className="flex flex-col w-full justify-center py-24 px-4 min-h-screen relative overflow-hidden"
       >
-        {/* Background Glow Effect (Opsional, untuk estetika) */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div className="relative z-10">
-          <motion.h1
+        <div className="relative z-10 max-w-5xl mx-auto w-full">
+          {/* Header */}
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="text-4xl sm:text-5xl font-bold text-center text-white mb-6 tracking-tight"
+            className="text-center mb-14"
           >
-            Get in{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-              Touch
-            </span>
-          </motion.h1>
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-5 tracking-tight">
+              Get in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                Touch
+              </span>
+            </h1>
 
-          <motion.p
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            className="w-11/12 sm:w-1/2 mx-auto flex mb-10 flex-wrap justify-center text-center text-gray-400 leading-relaxed text-sm sm:text-base"
-          >
-            {"Have a project in mind or just want to chat? Choose your preferred platform below."
-              .split(" ")
-              .map((word, i) => (
-                <motion.span
-                  key={`msg-${i}`}
-                  variants={wordVariants}
-                  className="mr-[0.25em]"
-                >
-                  {word}
-                </motion.span>
-              ))}
-          </motion.p>
-
-          {/* --- Tab Switcher Modern --- */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="flex justify-center mb-10"
-          >
-            <div className="relative flex bg-neutral-800/80 p-1.5 rounded-full border border-neutral-700 shadow-lg w-72">
-              {/* Sliding Background */}
-              <div
-                className={`absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shadow-md ${
-                  activeTab === "email"
-                    ? "translate-x-0 bg-gradient-to-r from-blue-600 to-blue-500"
-                    : "translate-x-full left-1.5 bg-gradient-to-r from-purple-600 to-purple-500"
-                }`}
-              ></div>
-
-              {/* Email Button */}
-              <button
-                onClick={() => {
-                  setActiveTab("email");
-                  setSent(false);
-                }}
-                className={`relative z-10 w-1/2 text-center font-medium py-2.5 rounded-full transition-colors duration-300 text-sm flex items-center justify-center gap-2 ${
-                  activeTab === "email"
-                    ? "text-white"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Mail size={16} /> Email
-              </button>
-
-              {/* Telegram Button */}
-              <button
-                onClick={() => {
-                  setActiveTab("telegram");
-                  setSent(false);
-                }}
-                className={`relative z-10 w-1/2 text-center font-medium py-2.5 rounded-full transition-colors duration-300 text-sm flex items-center justify-center gap-2 ${
-                  activeTab === "telegram"
-                    ? "text-white"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                <Send size={16} /> Telegram
-              </button>
-            </div>
-          </motion.div>
-
-          {/* --- Unified Form Container --- */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="w-full flex justify-center px-4"
-          >
-            {" "}
-            <div className="w-full max-w-lg transition-all duration-500">
-              <div
-                // className={`relative bg-neutral-800/50 backdrop-blur-md border rounded-3xl p-8 shadow-lg transition-all duration-500 ${
-                className={`relative bg-neutral-800/50 border rounded-3xl p-8 shadow-lg transition-all duration-500 ${
-                  activeTab === "email"
-                    ? // ? "border-blue-500/20 shadow-blue-500/5"
-                      // : "border-purple-500/20 shadow-purple-500/5"
-                      "border-neutral-700 shadow-blue-500/5"
-                    : "border-neutral-700 shadow-purple-500/5"
-                }`}
-              >
-                {/* EMAIL FORM */}
-                {activeTab === "email" && (
-                  <form
-                    ref={form}
-                    onSubmit={sendEmail}
-                    className="flex flex-col gap-5"
+            <motion.p
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+              className="w-full sm:w-2/3 mx-auto flex flex-wrap justify-center text-center text-gray-400 leading-relaxed text-sm sm:text-base"
+            >
+              {"Have a project in mind or just want to chat? Choose your preferred platform below."
+                .split(" ")
+                .map((word, i) => (
+                  <motion.span
+                    key={`msg-${i}`}
+                    variants={wordVariants}
+                    className="mr-[0.25em]"
                   >
-                    <div className="relative group">
-                      <User
-                        className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-blue-400 transition-colors"
-                        size={20}
-                      />
-                      <input
-                        type="text"
-                        name="name"
-                        placeholder="Your Name"
-                        required
-                        className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
-                      />
-                    </div>
-
-                    <div className="relative group">
-                      <Mail
-                        className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-blue-400 transition-colors"
-                        size={20}
-                      />
-                      <input
-                        type="email"
-                        name="email"
-                        placeholder="Your Email Address"
-                        required
-                        className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all"
-                      />
-                    </div>
-
-                    <div className="relative group">
-                      <MessageSquare
-                        className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-blue-400 transition-colors"
-                        size={20}
-                      />
-                      <textarea
-                        name="message"
-                        placeholder="What's on your mind?"
-                        required
-                        rows="5"
-                        className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all resize-none"
-                      ></textarea>
-                    </div>
-
-                    <input
-                      type="hidden"
-                      name="time"
-                      value={new Date().toLocaleString()}
-                    />
-
-                    <button
-                      type="submit"
-                      disabled={sending}
-                      className="mt-2 w-full text-sm bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {sending ? (
-                        <span className="animate-pulse">Sending...</span>
-                      ) : sent ? (
-                        "Message Sent!"
-                      ) : (
-                        <>
-                          <Send size={18} /> Send via Email
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-
-                {/* TELEGRAM FORM */}
-                {activeTab === "telegram" && (
-                  <form onSubmit={sendMessage} className="flex flex-col gap-5">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      <div className="relative group">
-                        <User
-                          className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
-                          size={20}
-                        />
-                        <input
-                          type="text"
-                          name="name"
-                          placeholder="Your Name"
-                          required
-                          className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all"
-                        />
-                      </div>
-                      <div className="relative group">
-                        <AtSign
-                          className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
-                          size={20}
-                        />
-                        <input
-                          type="text"
-                          name="euname"
-                          placeholder="Username / Email"
-                          required
-                          className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="relative group">
-                      <Hash
-                        className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
-                        size={20}
-                      />
-                      <input
-                        type="text"
-                        name="subject"
-                        placeholder="Subject (Optional)"
-                        className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all"
-                      />
-                    </div>
-
-                    <div className="relative group">
-                      <MessageSquare
-                        className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
-                        size={20}
-                      />
-                      <textarea
-                        name="message"
-                        placeholder="Write your telegram message..."
-                        required
-                        rows="5"
-                        className="w-full text-sm bg-neutral-900/50 border border-neutral-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all resize-none"
-                      ></textarea>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={sending}
-                      className="text-sm mt-2 w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {sending ? (
-                        <span className="animate-pulse">Sending...</span>
-                      ) : sent ? (
-                        "Message Sent!"
-                      ) : (
-                        <>
-                          <Send size={18} /> Send via Telegram
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </div>
+                    {word}
+                  </motion.span>
+                ))}
+            </motion.p>
           </motion.div>
+
+          {/* Bento Split Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
+            {/* LEFT PANEL: Contact Info & Socials */}
+            <motion.div
+              initial={{ opacity: 0, x: -25 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.55, ease: "easeOut" }}
+              viewport={{ once: true }}
+              className="lg:col-span-2 relative bg-neutral-900/95 border border-neutral-800 rounded-3xl p-6 sm:p-8 flex flex-col justify-between overflow-hidden shadow-xl shadow-black/30"
+            >
+              <div className="relative z-10">
+                {/* Availability Pill */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-xs font-medium mb-6">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  <span>Open for opportunities</span>
+                </div>
+
+                <h2 className="text-2xl font-bold text-white mb-3 leading-snug">
+                  Let&apos;s build something{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                    great together
+                  </span>
+                </h2>
+                <p className="text-sm text-gray-400 leading-relaxed mb-8">
+                  Whether it&apos;s IT infrastructure support, custom web apps, or
+                  desktop automation tools — feel free to reach out anytime.
+                </p>
+
+                {/* Info Items */}
+                <div className="flex flex-col gap-4 mb-8">
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0">
+                      <MapPin size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Location</p>
+                      <p className="text-sm font-medium text-gray-200">
+                        Indonesia (Remote / On-site)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 shrink-0">
+                      <Clock size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Response Time</p>
+                      <p className="text-sm font-medium text-gray-200">
+                        Usually within 24 hours
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shrink-0">
+                      <Sparkles size={18} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Focus Areas</p>
+                      <p className="text-sm font-medium text-gray-200">
+                        IT Support &amp; App Development
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Social Connect Links */}
+              <div className="relative z-10 pt-6 border-t border-neutral-800/80">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-3">
+                  Connect Directly
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <a
+                    href="https://github.com/hamma-nyk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-neutral-800/70 border border-neutral-700/70 hover:border-blue-500/50 hover:bg-neutral-800 text-gray-300 hover:text-white transition-all text-sm"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FontAwesomeIcon icon={faGithub} />
+                      <span>GitHub</span>
+                    </span>
+                    <ArrowUpRight
+                      size={14}
+                      className="text-gray-500 group-hover:text-blue-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+                    />
+                  </a>
+
+                  <a
+                    href="https://linkedin.com/in/myikos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-neutral-800/70 border border-neutral-700/70 hover:border-purple-500/50 hover:bg-neutral-800 text-gray-300 hover:text-white transition-all text-sm"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FontAwesomeIcon icon={faLinkedin} />
+                      <span>LinkedIn</span>
+                    </span>
+                    <ArrowUpRight
+                      size={14}
+                      className="text-gray-500 group-hover:text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+                    />
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* RIGHT PANEL: Tab Switcher & Interactive Form */}
+            <motion.div
+              initial={{ opacity: 0, x: 25 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
+              viewport={{ once: true }}
+              className="lg:col-span-3 relative"
+            >
+              <div
+                className={`relative h-full bg-neutral-900/95 border rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40 flex flex-col transition-colors duration-500 ${
+                  isEmail ? "border-blue-500/30" : "border-purple-500/30"
+                }`}
+              >
+                {/* Tab Switcher */}
+                <div className="flex items-center justify-between flex-wrap gap-4 mb-7 pb-5 border-b border-neutral-800/80">
+                  <div>
+                    <h3 className="text-lg font-bold text-white">
+                      Send a Message
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {isEmail
+                        ? "Delivered directly to my inbox"
+                        : "Instant ping via Telegram Bot"}
+                    </p>
+                  </div>
+
+                  <div className="relative inline-flex bg-neutral-800/90 p-1 rounded-full border border-neutral-700/80 shadow-inner">
+                    {tabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab(tab.id);
+                            setSent(false);
+                          }}
+                          className={`relative z-10 px-4 py-2 rounded-full text-xs sm:text-sm font-medium flex items-center gap-2 transition-colors duration-300 cursor-pointer select-none ${
+                            isActive
+                              ? "text-white font-semibold"
+                              : "text-gray-400 hover:text-white"
+                          }`}
+                        >
+                          {isActive && (
+                            <motion.div
+                              layoutId="activeContactTabIndicator"
+                              transition={{
+                                type: "spring",
+                                stiffness: 420,
+                                damping: 32,
+                              }}
+                              className={`absolute inset-0 rounded-full bg-gradient-to-r ${tab.gradient} shadow-md`}
+                            />
+                          )}
+                          <span className="relative z-10 flex items-center gap-1.5">
+                            <Icon size={15} />
+                            <span>{tab.label}</span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Animated Form Area */}
+                <AnimatePresence mode="wait">
+                  {isEmail ? (
+                    <motion.form
+                      key="email-form"
+                      ref={form}
+                      onSubmit={sendEmail}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="flex flex-col gap-4 flex-1"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="relative group">
+                          <User
+                            className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-blue-400 transition-colors"
+                            size={18}
+                          />
+                          <input
+                            type="text"
+                            name="name"
+                            placeholder="Your Name"
+                            required
+                            className="w-full text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all"
+                          />
+                        </div>
+
+                        <div className="relative group">
+                          <Mail
+                            className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-blue-400 transition-colors"
+                            size={18}
+                          />
+                          <input
+                            type="email"
+                            name="email"
+                            placeholder="Your Email Address"
+                            required
+                            className="w-full text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative group flex-1">
+                        <MessageSquare
+                          className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-blue-400 transition-colors"
+                          size={18}
+                        />
+                        <textarea
+                          name="message"
+                          placeholder="What's on your mind?"
+                          required
+                          rows="5"
+                          className="w-full h-full min-h-[140px] text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none transition-all resize-none"
+                        />
+                      </div>
+
+                      <input
+                        type="hidden"
+                        name="time"
+                        value={new Date().toLocaleString()}
+                      />
+
+                      <button
+                        type="submit"
+                        disabled={sending}
+                        className={`mt-2 w-full text-sm font-semibold py-3.5 rounded-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer ${
+                          sent
+                            ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                            : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-cyan-500 text-white shadow-lg shadow-blue-500/25"
+                        }`}
+                      >
+                        {sending ? (
+                          <>
+                            <Loader2 size={18} className="animate-spin" />
+                            <span>Sending...</span>
+                          </>
+                        ) : sent ? (
+                          <>
+                            <CheckCircle2 size={18} />
+                            <span>Message Sent!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send size={17} />
+                            <span>Send via Email</span>
+                          </>
+                        )}
+                      </button>
+                    </motion.form>
+                  ) : (
+                    <motion.form
+                      key="telegram-form"
+                      onSubmit={sendMessage}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="flex flex-col gap-4 flex-1"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="relative group">
+                          <User
+                            className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
+                            size={18}
+                          />
+                          <input
+                            type="text"
+                            name="name"
+                            placeholder="Your Name"
+                            required
+                            className="w-full text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="relative group">
+                          <AtSign
+                            className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
+                            size={18}
+                          />
+                          <input
+                            type="text"
+                            name="euname"
+                            placeholder="Username / Email"
+                            required
+                            className="w-full text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="relative group">
+                        <Hash
+                          className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
+                          size={18}
+                        />
+                        <input
+                          type="text"
+                          name="subject"
+                          placeholder="Subject (Optional)"
+                          className="w-full text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none transition-all"
+                        />
+                      </div>
+
+                      <div className="relative group flex-1">
+                        <MessageSquare
+                          className="absolute left-4 top-3.5 text-gray-500 group-focus-within:text-purple-400 transition-colors"
+                          size={18}
+                        />
+                        <textarea
+                          name="message"
+                          placeholder="Write your telegram message..."
+                          required
+                          rows="4"
+                          className="w-full h-full min-h-[115px] text-sm bg-neutral-950/70 border border-neutral-800 rounded-xl py-3 pl-11 pr-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 outline-none transition-all resize-none"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={sending}
+                        className={`mt-2 w-full text-sm font-semibold py-3.5 rounded-xl transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer ${
+                          sent
+                            ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                            : "bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/25"
+                        }`}
+                      >
+                        {sending ? (
+                          <>
+                            <Loader2 size={18} className="animate-spin" />
+                            <span>Sending...</span>
+                          </>
+                        ) : sent ? (
+                          <>
+                            <CheckCircle2 size={18} />
+                            <span>Message Sent!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send size={17} />
+                            <span>Send via Telegram</span>
+                          </>
+                        )}
+                      </button>
+                    </motion.form>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
     </Fragment>

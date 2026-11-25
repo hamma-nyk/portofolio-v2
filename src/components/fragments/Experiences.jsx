@@ -77,14 +77,12 @@ const Experiences = (props) => {
     },
   };
 
-  // Konfigurasi efek blur & geser untuk masing-masing kata
   const wordVariants = {
-    hidden: { filter: "blur(12px)", opacity: 0, y: 10 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
-      filter: "blur(0px)",
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
+      transition: { duration: 0.35, ease: "easeOut" },
     },
   };
 
@@ -95,9 +93,6 @@ const Experiences = (props) => {
         ref={goto}
         className="relative w-full py-24 px-4 overflow-hidden min-h-screen"
       >
-        {/* --- Background Glow Effects (Konsisten dengan section lain) --- */}
-        <div className="absolute top-1/3 -left-30 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="absolute bottom-1/3 -right-30 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
         <div className="relative z-10 max-w-6xl mx-auto">
           {/* --- Header Utama --- */}
@@ -183,24 +178,26 @@ const Experiences = (props) => {
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              transition={{ duration: 1, ease: "easeInOut" }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
               viewport={{ once: true }}
-              className="absolute left-0 sm:left-1/2 transform sm:-translate-x-1/2 h-full w-[2px] bg-gradient-to-b from-blue-500/50 via-purple-500/50 to-transparent rounded-full z-0"
-            ></motion.div>{" "}
-            {/* <div className="absolute left-0 sm:left-1/2 transform sm:-translate-x-1/2 bg-gray-400/30 h-full w-[3px] rounded-full"></div> */}
+              className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-500/60 via-purple-500/40 to-transparent rounded-full z-0"
+            />
+
             {/* List Experiences */}
-            <div className="flex flex-col gap-12 sm:gap-0 relative z-10">
+            <div className="flex flex-col gap-6 md:gap-8 relative z-10">
               {experiences.map((exp, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  // Memberikan sedikit delay (0.1s) agar transisinya lebih halus saat di-scroll
-                  transition={{ duration: 0.2, delay: 0.05, ease: "easeOut" }}
-                  viewport={{ once: true, amount: 0.2 }} // Memicu animasi saat 20% card terlihat
+                  transition={{
+                    duration: 0.45,
+                    delay: i * 0.08,
+                    ease: "easeOut",
+                  }}
+                  viewport={{ once: true, amount: 0.15 }}
                 >
                   <ExperienceCard
-                    key={i}
                     {...exp}
                     side={i % 2 === 0 ? "left" : "right"}
                     defaultOpen={i === 0}
